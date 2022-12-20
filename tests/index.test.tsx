@@ -1,6 +1,6 @@
 import { configure, mount, shallow } from "enzyme";
 import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
-import Home from "./index";
+import Home from "../pages/index";
 
 configure({ adapter: new Adapter() });
 

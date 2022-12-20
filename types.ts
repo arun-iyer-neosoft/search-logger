@@ -23,6 +23,7 @@ export interface ColumnType {
 	label: string;
 	attribute: string;
 	type?: "DATE";
+	sortable?: boolean;
 }
 
 export interface SortType {

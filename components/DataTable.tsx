@@ -30,15 +30,19 @@ export const DataTable: React.FC<DataTableProps> = ({
 						{columns.map((col, index) => {
 							return (
 								<th
-									className='border-b border-gray-300 px-4 py-4 text-left'
+									className={`border-b border-gray-300 px-4 py-4 text-left ${
+										col.sortable ? "cursor-pointer" : ""
+									}`}
 									key={col.label + index}
-									onClick={() =>
-										handleSort(col.attribute as keyof LoggerDataType)
+									onClick={
+										col.sortable
+											? () => handleSort(col.attribute as keyof LoggerDataType)
+											: undefined
 									}
 								>
 									<div className='flex items-center'>
 										<span className='mr-2'>{col.label}</span>
-										{sortDetails.field === col.attribute ? (
+										{col.sortable && sortDetails.field === col.attribute ? (
 											sortDetails.dir === "asc" ? (
 												<span>
 													<ArrowDown />

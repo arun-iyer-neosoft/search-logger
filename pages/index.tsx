@@ -46,12 +46,12 @@ export default function Home({ data }: any) {
 		? getUniqueOptions(data?.result?.auditLog, "applicationType")
 		: [];
 	const columns = [
-		{ label: "Log Id", attribute: "logId" },
-		{ label: "Application Type", attribute: "applicationType" },
-		{ label: "Application ID", attribute: "applicationId" },
-		{ label: "Action", attribute: "actionType" },
+		{ label: "Log Id", attribute: "logId", sortable: true },
+		{ label: "Application Type", attribute: "applicationType", sortable: true },
+		{ label: "Application ID", attribute: "applicationId", sortable: true },
+		{ label: "Action", attribute: "actionType", sortable: true },
 		{ label: "Action Details", attribute: "actionDetails" },
-		{ label: "Date: Time", attribute: "creationTimestamp" },
+		{ label: "Date: Time", attribute: "creationTimestamp", sortable: true },
 	];
 
 	// on change for inputs

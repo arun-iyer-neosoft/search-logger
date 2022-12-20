@@ -23,17 +23,6 @@ export default function Home({ data }: any) {
 	const limit = 10;
 	const [page, setPage] = useState(1);
 	const [auditLogs, setAuditLogs] = useState<LoggerDataType[]>([]);
-	const [actionList, setActionList] = useState<string[]>(
-		data?.success ? getUniqueOptions(data?.result?.auditLog, "actionType") : []
-	);
-	const [applicationTypeList, setApplicationTypeList] = useState<string[]>(
-		data?.success
-			? getUniqueOptions(data?.result?.auditLog, "applicationType")
-			: []
-	);
-	const router = useRouter();
-	const { logId, action, applicationType, fromDate, toDate, applicationId } =
-		router.query;
 	const [filters, setFilters] = useState<FiltersType>({
 		logId: "",
 		action: "",
@@ -46,11 +35,31 @@ export default function Home({ data }: any) {
 		field: "",
 		dir: "asc",
 	});
+	const router = useRouter();
+	const { logId, action, applicationType, fromDate, toDate, applicationId } =
+		router.query;
 
+	const actionList: string[] = data?.success
+		? getUniqueOptions(data?.result?.auditLog, "actionType")
+		: [];
+	const applicationTypeList: string[] = data?.success
+		? getUniqueOptions(data?.result?.auditLog, "applicationType")
+		: [];
+	const columns = [
+		{ label: "Log Id", attribute: "logId" },
+		{ label: "Application Type", attribute: "applicationType" },
+		{ label: "Application ID", attribute: "applicationId" },
+		{ label: "Action", attribute: "actionType" },
+		{ label: "Action Details", attribute: "actionDetails" },
+		{ label: "Date: Time", attribute: "creationTimestamp" },
+	];
+
+	// on change for inputs
 	const handleFilterChange = (e: any) => {
 		setFilters((f) => ({ ...f, [e.target.name]: e.target.value }));
 	};
 
+	// on clicking search logger, the url is updated and subsequent useeffect triggers filter
 	const filterData = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		let temp = "/?";
@@ -68,6 +77,7 @@ export default function Home({ data }: any) {
 		setPage(1);
 	};
 
+	// sorts data as per sortdetails state and field attribute
 	const handleSort = (attr: keyof LoggerDataType) => {
 		let { dir, field } = sortDetails;
 		if (field === attr) {
@@ -78,8 +88,8 @@ export default function Home({ data }: any) {
 		}
 		setAuditLogs((l) =>
 			l.sort((a, b) => {
-				let first = a[attr as keyof LoggerDataType] || "";
-				let second = b[attr as keyof LoggerDataType] || "";
+				let first = a[attr] || "";
+				let second = b[attr] || "";
 				if (dir === "asc") {
 					return first > second ? 1 : second > first ? -1 : 0;
 				}
@@ -89,20 +99,9 @@ export default function Home({ data }: any) {
 		setSortDetails({ field: attr, dir });
 	};
 
-	const columns = [
-		{ label: "Log Id", attribute: "logId" },
-		{ label: "Application Type", attribute: "applicationType" },
-		{ label: "Application ID", attribute: "applicationId" },
-		{ label: "Action", attribute: "actionType" },
-		{ label: "Action Details", attribute: "actionDetails" },
-		{ label: "Date: Time", attribute: "creationTimestamp" },
-	];
-
+	// to filter data whenever query params or data is changed
 	useEffect(() => {
 		const getFilteredLogs = () => {
-			if (!data?.success) {
-				return [];
-			}
 			let logs: LoggerDataType[] = data?.result?.auditLog || [];
 			if (logId && typeof logId === "string") {
 				logs = logs.filter((dat) => (dat.logId + "").search(logId) !== -1);
@@ -138,6 +137,7 @@ export default function Home({ data }: any) {
 		setAuditLogs(getFilteredLogs());
 	}, [data, logId, applicationId, applicationType, action, fromDate, toDate]);
 
+	// to update filters state whenever query params are updated
 	useEffect(() => {
 		setFilters({
 			logId: logId || "",
@@ -154,7 +154,7 @@ export default function Home({ data }: any) {
 			<Head>
 				<title>Search Logger</title>
 			</Head>
-			<main className='p-8'>
+			<main className='p-10'>
 				{data.success ? (
 					<div>
 						<form onSubmit={filterData}>
@@ -251,12 +251,9 @@ export default function Home({ data }: any) {
 						/>
 					</div>
 				) : (
-					<div>Error</div>
+					<div>An error occurred while fetching data</div>
 				)}
 			</main>
-			<pre>{JSON.stringify(filters, null, 2)}</pre>
-			<pre>{JSON.stringify(sortDetails, null, 2)}</pre>
-			<pre>{JSON.stringify({ limit, page }, null, 2)}</pre>
 		</>
 	);
 }
@@ -267,5 +264,4 @@ export const getServerSideProps = async () => {
 	);
 	const data = await res.json();
 	return { props: { data } };
-	// return { props: { data: { success: true } } };
 };

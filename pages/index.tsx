@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
 import { Button } from "../components/Button";
@@ -150,10 +149,11 @@ export default function Home({ data }: any) {
 		});
 	}, [logId, applicationId, applicationType, fromDate, toDate, action]);
 
-	console.log(fromDate);
-
 	return (
 		<>
+			<Head>
+				<title>Search Logger</title>
+			</Head>
 			<main className='p-8'>
 				{data.success ? (
 					<div>
@@ -228,7 +228,6 @@ export default function Home({ data }: any) {
 								<Button
 									onClick={() => router.push("/", undefined, { shallow: true })}
 									color='gray'
-									type='button'
 								>
 									Reset Filters
 								</Button>
